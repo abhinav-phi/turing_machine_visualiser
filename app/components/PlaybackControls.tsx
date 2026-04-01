@@ -37,73 +37,81 @@ export default function PlaybackControls({
   const statusClass = `status-${status}`;
 
   return (
-    <div className="glass-card" style={{ padding: '16px 24px' }}>
-      <div className="playback-wrapper">
-        {/* Playback buttons */}
-        <div className="playback-buttons">
-          <Tooltip text="Reset to initial state (R)">
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div className="playback-card">
+        {/* Reset */}
+        <Tooltip text="Reset to initial state (R)">
+          <button
+            className="btn btn-secondary btn-icon"
+            onClick={onReset}
+            title="Reset"
+            style={{ borderRadius: '9999px' }}
+          >
+            ⏮
+          </button>
+        </Tooltip>
+
+        {/* Step back */}
+        <Tooltip text="Step backward (←)">
+          <button
+            className="btn btn-secondary btn-icon"
+            onClick={onStepBack}
+            disabled={!canStepBack}
+            title="Step Back"
+            style={{ borderRadius: '9999px' }}
+          >
+            ◀
+          </button>
+        </Tooltip>
+
+        {/* Play / Pause */}
+        {isPlaying ? (
+          <Tooltip text="Pause simulation (Space)">
             <button
-              className="btn btn-secondary btn-icon"
-              onClick={onReset}
-              title="Reset"
+              className="btn btn-primary"
+              onClick={onPause}
+              style={{ minWidth: '88px', borderRadius: '9999px' }}
             >
-              ⏮
+              ⏸ Pause
             </button>
           </Tooltip>
-          <Tooltip text="Step backward (←)">
+        ) : (
+          <Tooltip text="Play simulation (Space)">
             <button
-              className="btn btn-secondary btn-icon"
-              onClick={onStepBack}
-              disabled={!canStepBack}
-              title="Step Back"
-            >
-              ◀
-            </button>
-          </Tooltip>
-          {isPlaying ? (
-            <Tooltip text="Pause simulation (Space)">
-              <button
-                className="btn btn-primary"
-                onClick={onPause}
-                style={{ minWidth: '80px' }}
-              >
-                ⏸ Pause
-              </button>
-            </Tooltip>
-          ) : (
-            <Tooltip text="Play simulation (Space)">
-              <button
-                className="btn btn-primary"
-                onClick={onPlay}
-                disabled={!canStep}
-                style={{ minWidth: '80px' }}
-              >
-                ▶ Play
-              </button>
-            </Tooltip>
-          )}
-          <Tooltip text="Step forward (→)">
-            <button
-              className="btn btn-secondary btn-icon"
-              onClick={onStep}
+              className="btn btn-primary"
+              onClick={onPlay}
               disabled={!canStep}
-              title="Step Forward"
+              style={{
+                minWidth: '88px',
+                borderRadius: '9999px',
+                boxShadow: canStep ? '0 0 20px rgba(14,165,233,0.4)' : undefined,
+                animation: canStep ? 'pulse 2s ease-in-out infinite' : undefined,
+              }}
             >
-              ▶
+              ▶ Play
             </button>
           </Tooltip>
-        </div>
+        )}
+
+        {/* Step forward */}
+        <Tooltip text="Step forward (→)">
+          <button
+            className="btn btn-secondary btn-icon"
+            onClick={onStep}
+            disabled={!canStep}
+            title="Step Forward"
+            style={{ borderRadius: '9999px' }}
+          >
+            ▶
+          </button>
+        </Tooltip>
+
+        <div className="divider" />
 
         {/* Speed control */}
         <Tooltip text="Adjust simulation speed" position="bottom">
           <div className="playback-speed">
-            <span style={{
-              fontSize: '12px',
-              color: 'var(--text-muted)',
-              whiteSpace: 'nowrap',
-            }}>
-              🐢
-            </span>
+            <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>🐢</span>
             <input
               type="range"
               min="50"
@@ -113,73 +121,47 @@ export default function PlaybackControls({
               onChange={(e) => onSpeedChange(2050 - parseInt(e.target.value))}
               style={{ flex: 1 }}
             />
+            <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>🐇</span>
             <span style={{
-              fontSize: '12px',
-              color: 'var(--text-muted)',
-              whiteSpace: 'nowrap',
-            }}>
-              🐇
-            </span>
-            <span style={{
-              fontSize: '11px',
+              fontSize: '10px',
               color: 'var(--text-muted)',
               fontFamily: 'var(--font-mono)',
-              minWidth: '50px',
+              fontWeight: 700,
+              minWidth: '44px',
             }}>
               {speed}ms
             </span>
           </div>
         </Tooltip>
 
-        {/* Status display */}
+        <div className="divider" />
+
+        {/* Status */}
         <div className="playback-status">
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-end',
-            gap: '4px',
-          }}>
-            <div style={{
-              fontSize: '11px',
-              color: 'var(--text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-            }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+            <div style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
               Step
             </div>
             <div style={{
-              fontSize: '22px',
-              fontWeight: 700,
+              fontSize: '20px',
+              fontWeight: 800,
               fontFamily: 'var(--font-mono)',
-              color: 'var(--accent-cyan)',
+              color: 'var(--accent-cyan-light, #0ea5e9)',
+              lineHeight: 1,
             }}>
               {stepCount}
             </div>
           </div>
 
-          <div style={{
-            width: '1px',
-            height: '36px',
-            background: 'var(--border-glass)',
-          }} />
+          <div className="divider" />
 
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: '4px',
-          }}>
-            <div style={{
-              fontSize: '11px',
-              color: 'var(--text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-            }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '2px' }}>
+            <div style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
               State
             </div>
             <div style={{
-              fontSize: '15px',
-              fontWeight: 600,
+              fontSize: '14px',
+              fontWeight: 700,
               fontFamily: 'var(--font-mono)',
               color: 'var(--text-primary)',
             }}>
@@ -193,13 +175,10 @@ export default function PlaybackControls({
                 className="pulse-dot"
                 style={{
                   background:
-                    status === 'running'
-                      ? 'var(--accent-cyan)'
-                      : status === 'accepted'
-                        ? 'var(--accent-emerald)'
-                        : status === 'rejected'
-                          ? 'var(--accent-rose)'
-                          : 'var(--accent-amber)',
+                    status === 'running' ? 'var(--accent-cyan-light, #0ea5e9)' :
+                    status === 'accepted' ? 'var(--accent-emerald)' :
+                    status === 'rejected' ? 'var(--accent-rose)' :
+                    'var(--accent-amber)',
                 }}
               />
               {status}
