@@ -6,7 +6,7 @@ interface TapeVisualizationProps {
   tapes: string[][];
   headPositions: number[];
   numTapes: number;
-  writtenCells?: Set<string>; // "tapeIndex-cellIndex"
+  writtenCells?: Set<string>;
   blankSymbol?: string;
 }
 
@@ -20,7 +20,6 @@ export default function TapeVisualization({
   const tapeRefs = useRef<(HTMLDivElement | null)[]>([]);
   const prevHeadPositions = useRef<number[]>([...headPositions]);
 
-  // Compute movement direction per tape
   const moveDirections = headPositions.map((pos, i) => {
     const prev = prevHeadPositions.current[i] ?? pos;
     if (pos > prev) return 'right';
@@ -28,35 +27,39 @@ export default function TapeVisualization({
     return 'none';
   });
 
-  // Update prevHeadPositions after render
   useEffect(() => {
     prevHeadPositions.current = [...headPositions];
   }, [headPositions]);
 
-  // Auto-scroll to keep head centered
   useEffect(() => {
     headPositions.forEach((pos, tapeIdx) => {
       const container = tapeRefs.current[tapeIdx];
       if (container) {
-        const cellWidth = 50; // cell-size + gap
+        const cellWidth = 58; // cell-size + gap
         const scrollTarget = pos * cellWidth - container.clientWidth / 2 + cellWidth / 2;
         container.scrollTo({ left: scrollTarget, behavior: 'smooth' });
       }
     });
   }, [headPositions]);
 
+  const tapeNames = ['INPUT', 'WORK', 'OUTPUT', 'AUX1', 'AUX2'];
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {Array.from({ length: numTapes }).map((_, tapeIdx) => {
         const tape = tapes[tapeIdx] || [];
         const headPos = headPositions[tapeIdx] ?? 0;
         const moveDir = moveDirections[tapeIdx];
+        const tapeName = tapeNames[tapeIdx] ?? `TAPE_${tapeIdx + 1}`;
 
         return (
           <div key={tapeIdx}>
             <div className="tape-label">
-              <span className="tape-num">{tapeIdx + 1}</span>
-              Tape {tapeIdx + 1}
+              <div className="tape-label-left">
+                <span className="tape-num">{tapeIdx + 1}</span>
+                <span>TAPE_{String(tapeIdx + 1).padStart(2, '0')} ({tapeName})</span>
+              </div>
+              <span className="tape-pos-badge">POS: {String(headPos).padStart(2, '0')}</span>
             </div>
             <div
               className="tape-container"
